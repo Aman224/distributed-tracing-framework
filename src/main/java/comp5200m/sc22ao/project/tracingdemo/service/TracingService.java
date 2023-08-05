@@ -3,20 +3,23 @@ package comp5200m.sc22ao.project.tracingdemo.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import comp5200m.sc22ao.project.tracingdemo.repository.TracingRepository;
-import comp5200m.sc22ao.project.tracingdemo.model.Trace;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import comp5200m.sc22ao.project.tracingdemo.model.TraceSpan;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static comp5200m.sc22ao.project.tracingdemo.repository.utils.QueryUtils.*;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
 public class TracingService {
     final Logger logger = LoggerFactory.getLogger(TracingService.class);
 
@@ -24,41 +27,38 @@ public class TracingService {
     private TracingRepository tracingRepository;
 
     public void saveSpans(Object spans) {
-        logger.info("Storing Spans");
         try {
-            logger.info(((ArrayList)spans).get(0).toString());
+            List<TraceSpan> traceSpans = convertObjectToSpans(spans);
+            save(traceSpans);
+            logger.info("Traces Saved Successfully");
         } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage());
-        }
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            logger.info(spans.toString());
-            List<Trace> traces = mapper.convertValue(spans, new TypeReference<>(){});
-            logger.info("Trace generated in Trace object format");
-
-            logger.info("Size: {}", traces.size());
-            logger.info("Trace Id's");
-            for (Trace trace : traces) {
-                logger.info("Id: {} CanonicalService: {}",trace.getTraceId(), trace.getTags().getIstioCanonicalService());
-            }
-
-            save(traces);
-            logger.info("Saved");
-        } catch (Exception e) {
-            logger.error("Error: {}", e.getMessage());
+            logger.error("Error saving Traces: {}", e.getMessage());
         }
     }
 
-    public void save(Trace trace) {
-        tracingRepository.save(trace);
+    public void save(List<TraceSpan> traceSpans) {
+        tracingRepository.saveAll(traceSpans);
     }
 
-    public void save(List<Trace> traces) {
-        tracingRepository.saveAll(traces);
+    public ResponseEntity<?> findAllSpans(String traceId) {
+        List<TraceSpan> traceSpans;
+
+        if (traceId != null) {
+            // For future improvements
+            Query query = buildEqualsQuery("traceId", traceId);
+            traceSpans = tracingRepository.findAll()
+                    .stream()
+                    .filter(traceSpan -> traceSpan.getTraceId().equals(traceId))
+                    .collect(Collectors.toList());
+        } else {
+            traceSpans = tracingRepository.findAll();
+        }
+
+        return new ResponseEntity<>(traceSpans, HttpStatus.OK);
     }
 
-    public List<Trace> findAllTraces() {
-        return tracingRepository.findAll();
+    private List<TraceSpan> convertObjectToSpans(Object spans) {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.convertValue(spans, new TypeReference<>(){});
     }
 }
