@@ -1,0 +1,51 @@
+# Persistent Volume Chain for MongoDB
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tracing-mongo-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    app: mongo
+spec:
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        - image: mongo
+          name: mongo
+          ports:
+            - containerPort: 27017
+      volumes:
+        - name: storage
+          persistentVolumeClaim:
+            claimName: tracing-mongo-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-service
+  labels:
+    run: mongo-service
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+      protocol: TCP
+  selector:
+    app: mongo
