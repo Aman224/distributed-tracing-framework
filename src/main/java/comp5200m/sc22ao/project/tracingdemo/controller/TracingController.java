@@ -32,6 +32,16 @@ public class TracingController {
         return tracingService.findAllSpans(traceId);
     }
 
+    @GetMapping("/trace/{traceId}/report")
+    public ResponseEntity<?> generateTraceReport(@PathVariable String traceId) {
+        return tracingService.generateTraceReport(traceId);
+    }
+
+    @GetMapping("/trace/report")
+    public ResponseEntity<?> generateTraceReport() {
+        return tracingService.generateCompleteTraceReport();
+    }
+
     @GetMapping("/health")
     public ResponseEntity<?> health() {
         return new ResponseEntity<>("SUCCESS", HttpStatus.OK);

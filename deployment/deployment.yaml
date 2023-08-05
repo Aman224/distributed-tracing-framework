@@ -26,7 +26,7 @@ spec:
               port: 9411
           env:
             - name: MONGO_URL
-              value: mongodb://10.244.0.71:27017
+              value: mongodb://10.244.0.75:27017
 ---
 apiVersion: v1
 kind: Service
