@@ -1,49 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tracing-app
+  name: tracing-framework
   namespace: istio-system
   labels:
-    app: tracing-app
+    app: tracing-framework
 spec:
   selector:
     matchLabels:
-      app: tracing-app
+      app: tracing-framework
   template:
     metadata:
       labels:
-        app: tracing-app
+        app: tracing-framework
         sidecar.istio.io/inject: "false"
     spec:
       containers:
-        - name: tracing-app
+        - name: tracing-framework
           image: tracing-app:0.0.1
           ports:
-            - containerPort: 9411
+            - containerPort: 8080
           readinessProbe:
             httpGet:
               path: /health
-              port: 9411
+              port: 8080
           env:
             - name: MONGO_URL
-              value: mongodb://10.244.0.75:27017
+              value: mongodb://10.244.0.93:27017
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: tracing
+  name: tracing-framework
   namespace: istio-system
   labels:
-    app: tracing-app
+    app: tracing-framework
 spec:
   type: ClusterIP
   ports:
     - name: http-query
       port: 80
       protocol: TCP
-      targetPort: 9411
+      targetPort: 8080
   selector:
-    app: tracing-app
+    app: tracing-framework
 ---
 apiVersion: v1
 kind: Service
@@ -55,23 +55,7 @@ metadata:
 spec:
   ports:
     - port: 9411
-      targetPort: 9411
+      targetPort: 8080
       name: http-query
   selector:
-    app: tracing-app
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: trace-collector
-  namespace: istio-system
-  labels:
-    app: tracing-app
-spec:
-  type: ClusterIP
-  ports:
-    - port: 9411
-      targetPort: 9411
-      name: http-zipkin
-  selector:
-    app: jaeger
+    app: tracing-framework
