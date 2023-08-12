@@ -74,17 +74,4 @@ public class TraceTreeNode {
     public void setService(String service) {
         this.service = service;
     }
-
-    public void populateTree(TraceTreeNode node,
-                             Map<String, Set<TraceSpan>> parentToChildrenSpans) {
-        if (parentToChildrenSpans.containsKey(node.getSpanId())) {
-            Set<TraceSpan> childSpans = parentToChildrenSpans.get(node.getSpanId());
-            for (TraceSpan span : childSpans) {
-                TraceTreeNode childNode = new TraceTreeNode(span.getId(), span.getName(),
-                        span.getTags().getIstioCanonicalService(), span.getDuration());
-                node.children.add(childNode);
-                populateTree(childNode, parentToChildrenSpans);
-            }
-        }
-    }
 }

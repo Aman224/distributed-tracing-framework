@@ -6,7 +6,7 @@ import comp5200m.sc22ao.project.tracingdemo.visualisation.TraceTreeNode;
 import comp5200m.sc22ao.project.tracingdemo.repository.TracingRepository;
 import comp5200m.sc22ao.project.tracingdemo.model.TraceSpan;
 
-import comp5200m.sc22ao.project.tracingdemo.visualisation.TraceTreeTraversal;
+import comp5200m.sc22ao.project.tracingdemo.visualisation.TraceTreeOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,16 +66,19 @@ public class TracingService {
         }
 
         if (rootNode != null) {
-            rootNode.populateTree(rootNode, parentIdToChildSpansMap);
+            TraceTreeOperations operations = new TraceTreeOperations(
+                    parentIdToChildSpansMap,
+                    rootNode.getDuration(),
+                    traceSpans);
 
-            TraceTreeTraversal treeTraversal = new TraceTreeTraversal(rootNode.getDuration());
-            String traceDiagram = treeTraversal.dfsTraversal(rootNode, 0);
+            operations.populateTree(rootNode);
+            String traceDiagram = operations.visualise(rootNode);
 
             logger.info("Trace Propagation Between Services\n {}", traceDiagram);
             return new ResponseEntity<>("<pre>" + traceDiagram + "</pre>", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Trace Not Found", HttpStatus.NOT_FOUND);
         }
+
+        return new ResponseEntity<>("Trace Not Found", HttpStatus.NOT_FOUND);
     }
 
     public ResponseEntity<?> generateCompleteTraceReport() {
