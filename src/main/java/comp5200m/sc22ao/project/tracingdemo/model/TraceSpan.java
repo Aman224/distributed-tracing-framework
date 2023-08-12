@@ -5,6 +5,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
+import java.util.Objects;
 
 @Document("trace")
 public class TraceSpan {
@@ -15,7 +16,7 @@ public class TraceSpan {
     private String name;
 
     @JsonProperty("timestamp")
-    private String timestamp;
+    private Long timestamp;
 
     @JsonProperty("parentId")
     private String parentId;
@@ -55,11 +56,11 @@ public class TraceSpan {
         this.name = name;
     }
 
-    public String getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -117,5 +118,32 @@ public class TraceSpan {
 
     public void setDuration(Long duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        TraceSpan compare = (TraceSpan) o;
+        return Objects.equals(compare.getId(), this.id)
+                && Objects.equals(compare.getTraceId(), this.traceId)
+                && Objects.equals(compare.getName(), this.name)
+                && Objects.equals(compare.getParentId(), this.parentId)
+                && Objects.equals(compare.getKind(), this.kind)
+                && Objects.equals(compare.getTimestamp(), this.timestamp)
+                && Objects.equals(compare.getDuration(), this.duration);
+    }
+
+    @Override
+    public String toString() {
+        return this.id +
+                "\t" +
+                this.traceId +
+                "\t" +
+                this.duration +
+                "\t" +
+                this.tags.getIstioCanonicalService() +
+                "\t\t\t" +
+                this.parentId +
+                "\t\t" +
+                this.name;
     }
 }

@@ -10,6 +10,7 @@ import java.util.Set;
 public class TraceTreeNode {
     private String spanId;
     private String spanName;
+    private String service;
     private Long duration;
     private List<TraceTreeNode> children = new LinkedList<>();
 
@@ -22,9 +23,10 @@ public class TraceTreeNode {
         this.spanName = spanName;
     }
 
-    public TraceTreeNode(String spanId, String spanName, Long duration) {
+    public TraceTreeNode(String spanId, String spanName, String service, Long duration) {
         this.spanId = spanId;
         this.spanName = spanName;
+        this.service = service;
         this.duration = duration;
     }
 
@@ -65,12 +67,21 @@ public class TraceTreeNode {
         this.duration = duration;
     }
 
+    public String getService() {
+        return this.service;
+    }
+
+    public void setService(String service) {
+        this.service = service;
+    }
+
     public void populateTree(TraceTreeNode node,
                              Map<String, Set<TraceSpan>> parentToChildrenSpans) {
         if (parentToChildrenSpans.containsKey(node.getSpanId())) {
             Set<TraceSpan> childSpans = parentToChildrenSpans.get(node.getSpanId());
             for (TraceSpan span : childSpans) {
-                TraceTreeNode childNode = new TraceTreeNode(span.getId(), span.getName(), span.getDuration());
+                TraceTreeNode childNode = new TraceTreeNode(span.getId(), span.getName(),
+                        span.getTags().getIstioCanonicalService(), span.getDuration());
                 node.children.add(childNode);
                 populateTree(childNode, parentToChildrenSpans);
             }

@@ -1,13 +1,20 @@
 package comp5200m.sc22ao.project.tracingdemo.visualisation;
 
-import comp5200m.sc22ao.project.tracingdemo.service.TracingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TraceTreeTraversal {
-    final static Logger logger = LoggerFactory.getLogger(TracingService.class);
+    private Integer durationNormFactor;
+    private final Integer DEFAULT_DURATION_NORMALISATION_FACTOR = 1000;
 
-    public static String dfsTraversal(TraceTreeNode node, int depth) {
+    public TraceTreeTraversal(Long duration) {
+        Integer durationNormFactor = findDurationNormFactor(duration);
+        if (durationNormFactor != null) {
+            this.durationNormFactor = durationNormFactor;
+        } else {
+            this.durationNormFactor = DEFAULT_DURATION_NORMALISATION_FACTOR;
+        }
+    }
+
+    public String dfsTraversal(TraceTreeNode node, int depth) {
         StringBuilder sb = new StringBuilder();
         sb.append(formatMessageForDepth(node, depth));
         for (TraceTreeNode child : node.getChildren()) {
@@ -16,12 +23,36 @@ public class TraceTreeTraversal {
         return sb.toString();
     }
 
-    private static String formatMessageForDepth(TraceTreeNode node, int depth) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < depth; i++) {
-            sb.append("    ");
-        }
-        sb.append(node.getSpanName()).append(" [").append(node.getDuration()).append("ms]").append("\n");
+    private String formatMessageForDepth(TraceTreeNode node, int depth) {
+        StringBuilder sb = new StringBuilder()
+                .append("    ".repeat(depth))
+                .append(node.getSpanName())
+                .append("\n")
+                .append("    ".repeat(depth))
+                .append("Service: ")
+                .append(node.getService())
+                .append("\n")
+                .append("    ".repeat(depth))
+                .append("Duration: [")
+                .append(node.getDuration() / 1000)
+                .append("ms]")
+                .append("\n")
+                .append("    ".repeat(depth))
+                .append("=".repeat(Math.toIntExact(node.getDuration() / durationNormFactor)))
+                .append("\n");
+
         return sb.toString();
+    }
+
+    private Integer findDurationNormFactor(Long duration) {
+        if (duration < 1000) {
+            return 10;
+        } else if (duration < 5000) {
+            return 100;
+        } else if (duration < 20000) {
+            return 500;
+        } else {
+            return Math.toIntExact(duration / 100);
+        }
     }
 }
