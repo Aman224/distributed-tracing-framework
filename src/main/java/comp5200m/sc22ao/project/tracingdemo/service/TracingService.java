@@ -49,14 +49,14 @@ public class TracingService {
     public ResponseEntity<?> generateTraceReport(String traceId) {
         List<TraceSpan> traceSpans = findTraceSpans(traceId);
 
-        Map<String, Set<TraceSpan>> parentIdToChildSpansMap = new HashMap<>();
+        Map<String, List<TraceSpan>> parentIdToChildSpansMap = new HashMap<>();
         TraceTreeNode rootNode = null;
 
         for (TraceSpan span : traceSpans) {
             if (span.getParentId() != null) {
-                Set<TraceSpan> children = parentIdToChildSpansMap.get(span.getParentId());
+                List<TraceSpan> children = parentIdToChildSpansMap.get(span.getParentId());
                 if (children == null) {
-                    children = new LinkedHashSet<>();
+                    children = new ArrayList<>();
                 }
                 children.add(span);
                 parentIdToChildSpansMap.put(span.getParentId(), children);

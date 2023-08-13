@@ -7,10 +7,10 @@ import java.util.*;
 
 public class TraceTreeOperations {
     private final Integer durationNormFactor;
-    private final Map<String, Set<TraceSpan>> parentToChildrenSpans;
+    private final Map<String, List<TraceSpan>> parentToChildrenSpans;
     private final List<TraceSpan> spans;
 
-    public TraceTreeOperations(Map<String, Set<TraceSpan>> parentToChildrenSpans, Long duration, List<TraceSpan> spans) {
+    public TraceTreeOperations(Map<String, List<TraceSpan>> parentToChildrenSpans, Long duration, List<TraceSpan> spans) {
         this.durationNormFactor = findDurationNormFactor(duration);
         this.parentToChildrenSpans = parentToChildrenSpans;
         this.spans = spans;
@@ -18,7 +18,7 @@ public class TraceTreeOperations {
 
     public void populateTree(TraceTreeNode node) {
         if (parentToChildrenSpans.containsKey(node.getSpanId())) {
-            Set<TraceSpan> childSpans = parentToChildrenSpans.get(node.getSpanId());
+            List<TraceSpan> childSpans = parentToChildrenSpans.get(node.getSpanId());
             for (TraceSpan span : childSpans) {
                 TraceTreeNode childNode = new TraceTreeNode(span.getId(), span.getName(),
                         span.getTags().getIstioCanonicalService(), span.getDuration());
@@ -73,16 +73,6 @@ public class TraceTreeOperations {
 
     public TraceTreeNode initialiseTraceTreeNode(TraceSpan span) {
         return new TraceTreeNode(span.getId(), span.getName(), span.getTags().getIstioCanonicalService(), span.getDuration());
-    }
-
-    public Integer getNumberOfNodes(TraceTreeNode node) {
-        List<TraceTreeNode> childNodes = node.getChildren();
-        Integer count = 1;
-
-        for (TraceTreeNode childNode : childNodes) {
-            count += getNumberOfNodes(childNode);
-        }
-        return count;
     }
 
     public Set<String> dfsGetAllNodes(TraceTreeNode node) {

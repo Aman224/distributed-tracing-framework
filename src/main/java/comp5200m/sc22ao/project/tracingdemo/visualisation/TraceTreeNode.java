@@ -1,11 +1,8 @@
 package comp5200m.sc22ao.project.tracingdemo.visualisation;
 
-import comp5200m.sc22ao.project.tracingdemo.model.TraceSpan;
-
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 
 public class TraceTreeNode {
     private String spanId;
@@ -73,5 +70,15 @@ public class TraceTreeNode {
 
     public void setService(String service) {
         this.service = service;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        TraceTreeNode compare = (TraceTreeNode) o;
+        return Objects.equals(this.spanId, compare.getSpanId())
+                && Objects.equals(this.spanName, compare.getSpanName())
+                && Objects.equals(this.service, compare.getService())
+                && Objects.equals(this.duration, compare.getDuration())
+                && Objects.equals(this.children, compare.getChildren());
     }
 }

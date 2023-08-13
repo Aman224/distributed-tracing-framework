@@ -28,8 +28,7 @@ public class TracingServiceTests {
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
-        this.spans = new ObjectMapper().readValue(TEST_SPANS, new TypeReference<>() {
-        });
+        this.spans = new ObjectMapper().readValue(TEST_SPANS, new TypeReference<>() {});
     }
 
     @Test
