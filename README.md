@@ -4,13 +4,13 @@
 
 ## Introduction
 
-This framework performs distributed tracing using the service mesh in container orchestration systems. It uses the [Istio](https://istio.io/) service mesh to collect trace information which is then stored in a [MongoDB](https://www.mongodb.com/) database. This database is queried to generate the trace visualisation. It is developed as a [Spring Boot](https://spring.io/projects/spring-boot) backend application that can be deployed as a pod in Kubernetes. This deployment will configure the Istio proxies to send trace information to this application.
+This framework performs distributed tracing using the service mesh in container orchestration systems. It uses the [Istio](https://istio.io/) service mesh to collect trace information which is then stored in a [MongoDB](https://www.mongodb.com/) database. This database is queried to generate the trace visualisation. It is developed as a [Spring Boot](https://spring.io/projects/spring-boot) backend application that can be deployed as a pod in [Kubernetes](https://kubernetes.io/). This deployment will configure the Istio proxies to send trace information to this application.
 
 ## Requirements
 
 - Java 11+
 - [Docker](https://www.docker.com/)
-- [Kubernetes](https://kubernetes.io/)
+- Kubernetes
 - Istio
 
 ## How to Build
@@ -31,7 +31,7 @@ This application uses Maven to build the jar file. To build the application foll
 
    This command will build a docker image and tag it as `tracing-framework:0.0.1`
 
-3. If Minikube is used as the Kubernetes cluster the image need not be pushed into docker hub. It can be directly loaded into the Minikube cluster using the command
+3. If [Minikube](https://minikube.sigs.k8s.io/docs/start/) is used as the Kubernetes cluster the image need not be pushed into docker hub. It can be directly loaded into the Minikube cluster using the command
 
        minikube image load tracing-framework:0.0.1
 
