@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tracing-framework
-  namespace: istio-system
   labels:
     app: tracing-framework
+  namespace: istio-system
 spec:
   selector:
     matchLabels:
@@ -17,26 +17,29 @@ spec:
     spec:
       containers:
         - name: tracing-framework
-          image: tracing-app:0.0.1
+          image: tracing-framework:0.0.1
           ports:
             - containerPort: 8080
           readinessProbe:
             httpGet:
-              path: /health
+              path: actuator/health/readiness
               port: 8080
+            initialDelaySeconds: 20
           env:
-          - name: MONGO_URL
-            value: "mongodb://10.244.0.187:27017"
-          - name: PORT
-            value: "8080"
+            - name: MONGO_URL
+              value: "mongodb://tracing-db-service:27017"
+            - name: MONGO_DATABASE
+              value: "tracing-db"
+            - name: PORT
+              value: "8080"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: tracing-framework
-  namespace: istio-system
   labels:
     app: tracing-framework
+  namespace: istio-system
 spec:
   type: ClusterIP
   ports:

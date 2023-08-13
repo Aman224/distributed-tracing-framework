@@ -2,7 +2,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: tracing-mongo-pvc
+  name: tracing-db-pvc
+  namespace: istio-system
 spec:
   accessModes:
     - ReadWriteOnce
@@ -13,17 +14,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mongo
+  name: tracing-db
   labels:
-    app: mongo
+    app: tracing-db
+  namespace: istio-system
 spec:
   selector:
     matchLabels:
-      app: mongo
+      app: tracing-db
   template:
     metadata:
       labels:
-        app: mongo
+        app: tracing-db
         sidecar.istio.io/inject: "false"
     spec:
       containers:
@@ -34,18 +36,19 @@ spec:
       volumes:
         - name: storage
           persistentVolumeClaim:
-            claimName: tracing-mongo-pvc
+            claimName: tracing-db-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-service
+  name: tracing-db-service
   labels:
-    run: mongo-service
+    run: tracing-db-service
+  namespace: istio-system
 spec:
   ports:
     - port: 27017
       targetPort: 27017
       protocol: TCP
   selector:
-    app: mongo
+    app: tracing-db

@@ -6,15 +6,11 @@ spec:
   hosts:
     - ratings
   http:
-    - match:
-        - headers:
-            end-user:
-              exact: jason
-      fault:
+      - fault:
         abort:
           percentage:
             value: 100.0
-          httpStatus: 404
+          httpStatus: 500
       route:
         - destination:
             host: ratings

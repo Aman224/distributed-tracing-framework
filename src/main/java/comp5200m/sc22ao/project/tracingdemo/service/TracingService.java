@@ -46,6 +46,16 @@ public class TracingService {
         return new ResponseEntity<>("<pre>" + response + "</pre>", HttpStatus.OK);
     }
 
+    public ResponseEntity<?> findSpan(String traceId, String spanId) {
+        TraceSpan traceSpan = findTraceSpan(spanId);
+
+        if (traceSpan != null) {
+            return new ResponseEntity<>(traceSpan, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Span with Id: " + spanId + " not Found", HttpStatus.NOT_FOUND);
+        }
+    }
+
     public ResponseEntity<?> generateTraceReport(String traceId) {
         List<TraceSpan> traceSpans = findTraceSpans(traceId);
 
@@ -100,6 +110,11 @@ public class TracingService {
         } else {
             return tracingRepository.findAll();
         }
+    }
+
+    public TraceSpan findTraceSpan(String spanId) {
+        Optional<TraceSpan> span = tracingRepository.findById(spanId);
+        return span.orElse(null);
     }
 
     public String convertSpansToString(List<TraceSpan> spans) {

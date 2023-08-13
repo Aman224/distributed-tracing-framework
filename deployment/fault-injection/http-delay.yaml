@@ -6,11 +6,7 @@ spec:
   hosts:
     - ratings
   http:
-    - match:
-        - headers:
-            end-user:
-              exact: jason
-      fault:
+    - fault:
         delay:
           percentage:
             value: 100.0
