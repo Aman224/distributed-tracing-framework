@@ -44,23 +44,19 @@ spec:
   type: ClusterIP
   ports:
     - name: http-query
-      port: 80
+      port: 8080
       protocol: TCP
       targetPort: 8080
   selector:
     app: tracing-framework
 ---
-apiVersion: v1
-kind: Service
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
 metadata:
-  labels:
-    name: zipkin
-  name: zipkin
+  name: proxy-config
   namespace: istio-system
 spec:
-  ports:
-    - port: 9411
-      targetPort: 8080
-      name: http-query
-  selector:
-    app: tracing-framework
+  tracing:
+    - randomSamplingPercentage: 100.00
+    - providers:
+        - name: tracing-provider

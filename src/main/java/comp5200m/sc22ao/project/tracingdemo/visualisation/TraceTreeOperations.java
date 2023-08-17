@@ -59,8 +59,8 @@ public class TraceTreeOperations {
     }
 
     public String dfsTraversalAndVisualiseTree(TraceTreeNode node, int depth) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(formatMessageForDepth(node, depth));
+        StringBuilder sb = new StringBuilder()
+                .append(formatMessageForDepth(node, depth));
         for (TraceTreeNode child : node.getChildren()) {
             sb.append(dfsTraversalAndVisualiseTree(child, depth + 1));
         }

@@ -80,4 +80,12 @@ public class TracingServiceTests {
         Assertions.assertEquals(reportResponse.getStatusCode(), HttpStatus.NOT_FOUND);
         Assertions.assertEquals(reportResponse.getBody(), "Trace Not Found");
     }
+
+    @Test
+    void verifyDataConsistency() {
+        String spanId = spans.get(0).getTraceId();
+        TraceSpan span = tracingService.findTraceSpan(spanId);
+
+        Assertions.assertEquals(span, spans.get(0));
+    }
 }
