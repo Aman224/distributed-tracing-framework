@@ -18,7 +18,7 @@ This framework performs distributed tracing using the service mesh in container 
 
 The figure shows the architecture of the complete system.
 
-![image info](./architecture.png)
+![image info](./architecture.svg)
 
 The high-level architecture consists of four parts which include the Spring Boot Tracing framework, the MongoDB database, the Istio service mesh and the microservice application.
 
